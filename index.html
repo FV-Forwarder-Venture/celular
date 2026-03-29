@@ -117,7 +117,7 @@
                 <h2 id="modal-title" class="text-xl md:text-2xl font-black text-fv-blue mt-1 mb-4 leading-tight uppercase"></h2>
                 
                 <div id="variant-section" class="mb-4 hidden">
-                    <label class="text-[10px] font-black text-gray-400 uppercase mb-2 block">Versión / Capacidad:</label>
+                    <label class="text-[10px] font-black text-gray-400 uppercase mb-2 block">Capacidad / RAM:</label>
                     <div id="variant-container" class="flex flex-wrap gap-2"></div>
                 </div>
 
@@ -134,8 +134,8 @@
                 </div>
                 
                 <div class="grid grid-cols-2 gap-3 mt-auto shrink-0">
-                    <button onclick="shareSingleProduct()" class="bg-[#F0FDF4] text-[#16A34A] rounded-2xl py-4 font-black flex items-center justify-center gap-2 hover:bg-green-100 transition uppercase tracking-tighter"><i class="fa-brands fa-whatsapp text-xl"></i> Compartir</button>
-                    <button onclick="addToCartFromModal()" class="bg-[#0F172A] text-white rounded-2xl py-4 font-black flex items-center justify-center gap-2 hover:opacity-90 transition uppercase tracking-tighter"><i class="fa-solid fa-plus text-xl"></i> Añadir</button>
+                    <button onclick="shareSingleProduct()" class="bg-[#F0FDF4] text-[#16A34A] rounded-2xl py-4 font-black flex items-center justify-center gap-2 hover:bg-green-100 transition shadow-sm uppercase tracking-tighter"><i class="fa-brands fa-whatsapp text-xl"></i> Compartir</button>
+                    <button onclick="addToCartFromModal()" class="bg-[#0F172A] text-white rounded-2xl py-4 font-black flex items-center justify-center gap-2 hover:opacity-90 transition shadow-sm uppercase tracking-tighter"><i class="fa-solid fa-plus text-xl"></i> Añadir</button>
                 </div>
             </div>
         </div>
@@ -143,9 +143,9 @@
 
     <div id="cart-modal" class="hidden fixed inset-0 bg-black/60 z-[200] flex justify-end">
         <div class="bg-white w-full max-w-md h-full flex flex-col shadow-2xl animate-slide-up md:animate-none">
-            <div class="p-6 border-b flex justify-between items-center">
-                <h2 class="text-2xl font-black text-fv-blue uppercase tracking-tighter">TU PEDIDO</h2>
-                <button onclick="toggleCart()"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <div class="p-6 border-b flex justify-between items-center bg-white">
+                <h2 class="text-2xl font-black text-fv-blue uppercase tracking-tighter">TU PEDIDO TECH</h2>
+                <button onclick="toggleCart()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <div id="cart-items" class="flex-grow overflow-y-auto p-6 space-y-4 bg-gray-50"></div>
             <div class="p-6 border-t bg-white">
@@ -167,7 +167,7 @@
     <script>
         const WHATSAPP_NUMBER = '3114957971'; 
         const SHEET_ID = '17a0Pxq1EOLRf86yiuM014ZluVqL2Qj1Mt8cKRDenjHc';
-        const GID = '429978732';
+        const GID = '429978732'; // Pestaña Celulares (Cambia este GID si es necesario)
         const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
 
         let allGroups = [];
@@ -212,7 +212,8 @@
                         if (!row['NOMBRE'] && !sku) return;
                         if ((row['VISIBLE'] || '').toString().trim().toUpperCase() === 'NO') return;
 
-                        let pStr = (row['PRECIO DE VENTA'] || row['PRECIO 1'] || '0').toString();
+                        // Ahora leemos de PRECIO DE VENTA
+                        let pStr = (row['PRECIO DE VENTA'] || '0').toString();
                         const precioVenta = parseInt(pStr.replace(/\D/g, '')) || 0;
 
                         const rawImgs = row['IMAGEN']?.split('|')
@@ -225,13 +226,14 @@
                             tempGroups[pSku] = {
                                 id: pSku,
                                 nombre: row['NOMBRE']?.trim() || 'Sin Nombre',
-                                tipo: row['TIPO']?.trim() || 'Celulares',
+                                tipo: row['MARCA']?.trim() || 'Celulares', // Mapeamos MARCA en lugar de TIPO
                                 index: index,
                                 skuMap: {}
                             };
                         }
 
-                        const safeVariable = superClean(row['VARIABLE']);
+                        // Mapeamos CAPACIDAD/RAM a nuestra variable principal
+                        const safeVariable = superClean(row['CAPACIDAD/RAM']);
                         const safeExtra = superClean(row['EXTRA']);
 
                         if (!tempGroups[pSku].skuMap[sku]) {
@@ -423,7 +425,7 @@
         function quickShare(event, id) {
             event.stopPropagation();
             const g = allGroups.find(p => p.id === id);
-            const text = `📱 *CELULARES - FORWARDER VENTURE*%0A%0A*${g.nombre}*%0A_Consulta precio y disponibilidad aquí._`;
+            const text = `📱 *CELULARES - FORWARDER VENTURE*%0A%0A*${g.nombre}*%0A_Consulta precio aquí._`;
             window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
         }
 
